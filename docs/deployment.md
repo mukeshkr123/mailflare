@@ -20,7 +20,7 @@ Use two separate API tokens. Never store the Wrangler deployment token in the ap
 | Deployment (`CLOUDFLARE_API_TOKEN`) | Workers Scripts Edit, D1 Edit, Workers R2 Storage Edit, Queues Edit, Account Settings Read | Only the deployment account |
 | Deployment custom route (optional) | Workers Routes Edit | Only the intended zone |
 | Runtime `CF_TOKEN`: zone discovery and DNS | Zone Read, DNS Edit | Only the zones you will connect |
-| Runtime: Cloudflare Email Routing | Email Routing Rules Edit | Only those zones |
+| Runtime: Cloudflare Email Routing | Email Routing Rules Edit, Zone Settings Edit | Only those zones |
 | Runtime: Cloudflare Email Sending (optional) | Email Sending Edit | Only the sending account |
 
 Permission names can differ between Cloudflare's role-based and API-token screens. Use the narrow equivalent described in Cloudflare's [API token permissions](https://developers.cloudflare.com/fundamentals/api/reference/permissions/). Add additional permissions only when an enabled feature's API requires them, limited to the same account and zones. Resend/SES do not require Cloudflare Email Sending permissions. Do not grant access to every account or every zone, or use a Global API Key for a new install. Existing installations using broad credentials must replace and revoke them in Cloudflare: changing this repository does not alter issued tokens.

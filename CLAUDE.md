@@ -176,9 +176,9 @@ Mailbox content authorization goes through `src/lib/mailboxes/access.ts` (`getMa
 
 `messages.status` is a free-text column driving the folder views: `received` (inbox), `sent`, `draft`, `spam`, `trash`, `archived`. Orthogonal to that are `starred`, `snoozedUntil`, and `folderId` (user-created folders in the `folders` table). A "folder" route under `src/app/(dashboard)/` is usually a status filter, not a table.
 
-### Licensing gates branding
+### Self-hosted features
 
-Pro/Team keys are validated against Paymug (`src/lib/licenses/`); only a one-way key hash is stored. Without an active license the app falls back to the default name, icon, and favicon, and custom branding is unavailable. `getLicenseEntitlements` is the gate.
+This distribution enables all implemented features through `getSelfHostedEntitlements` in `src/lib/licenses/features.ts`, shared by the main entitlement service and mailbox-sharing availability checks. There is no paid activation requirement or seat cap. Existing authorization and ownership checks still apply. `/licenses` explains the edition and links to corresponding source and copyright/license notices. Legacy activation endpoints return 410 after administrator authorization. The license table and backup coverage stay intact for older backups; do not rewrite vendor activation state to pretend a paid license exists.
 
 ### Self-update
 

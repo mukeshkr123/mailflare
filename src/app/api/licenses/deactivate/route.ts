@@ -1,17 +1,12 @@
 import { NextResponse } from "next/server";
 import { getEnv } from "@/lib/cloudflare";
-import { deactivateLicense } from "@/lib/licenses/service";
-import { getLicenseErrorResponse, requireLicenseAdmin } from "../utils";
+import { requireLicenseAdmin } from "../utils";
 
 export async function POST(request: Request) {
-	const env = getEnv();
-	const forbidden = await requireLicenseAdmin(env, request);
+	const forbidden = await requireLicenseAdmin(getEnv(), request);
 	if (forbidden) return forbidden;
-
-	try {
-		const license = await deactivateLicense(env);
-		return NextResponse.json({ license });
-	} catch (error) {
-		return getLicenseErrorResponse(error);
-	}
+	return NextResponse.json({ error: "This self-hosted installation includes all features. License activation is not required." }, {
+		status: 410,
+		headers: { "Cache-Control": "no-store" },
+	});
 }

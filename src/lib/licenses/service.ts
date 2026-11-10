@@ -1,3 +1,4 @@
+import { getSelfHostedEntitlements } from "./features";
 import { eq } from "drizzle-orm";
 import packageJson from "../../../package.json";
 import { getDb } from "@/db";
@@ -52,21 +53,8 @@ export async function getLicenseStatus(env: CloudflareEnv): Promise<LicenseStatu
 	return toLicenseStatus(await getOrCreateLicenseSettings(env));
 }
 
-export async function getLicenseEntitlements(env: CloudflareEnv): Promise<LicenseEntitlements> {
-	try {
-		const status = await getLicenseStatus(env);
-		// Pro adds accounts up to its seat limit; Team is unlimited and also unlocks shared mailboxes.
-		return {
-			plan: status.plan,
-			canCustomizeBranding: status.active,
-			canManageAccounts: status.active,
-			canShareMailboxes: status.active && status.plan === "team",
-			accountSeatLimit: status.seatLimit,
-			canForwardEmail: status.active,
-		};
-	} catch {
-		return { plan: "community", canCustomizeBranding: false, canManageAccounts: false, canShareMailboxes: false, accountSeatLimit: 0, canForwardEmail: false };
-	}
+export async function getLicenseEntitlements(_env: CloudflareEnv): Promise<LicenseEntitlements> {
+	return getSelfHostedEntitlements();
 }
 
 async function updateLicenseFromPaymug(

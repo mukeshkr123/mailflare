@@ -9,7 +9,7 @@ export async function callPaymugLicenseApi(
 ): Promise<PaymugLicenseResponse> {
 	let response: Response;
 
-	console.log(input);
+
 	
 	try {
 		response = await fetch(`${PAYMUG_BASE_URL}/api/v1/licenses/${action}`, {

@@ -2358,5 +2358,15 @@
 	"setup.secretHint": "Enter the setup secret supplied by the person deploying this installation.",
 	"setup.unlock": "Unlock setup",
 	"update.manual": "Review upstream changes, apply them to your installation, and deploy manually. Back up your data before updating.",
-	"update.installedVersion": "Installed version: {version}"
+	"update.installedVersion": "Installed version: {version}",
+	"selfHosted.title": "Self-hosted edition",
+	"selfHosted.description": "All features included in this distribution are available without a paid license or activation key.",
+	"selfHosted.branding": "Custom app name, icons and branding",
+	"selfHosted.accounts": "Unlimited account seats and account management",
+	"selfHosted.sharing": "Shared mailboxes, delegated access and booking hosts",
+	"selfHosted.forwarding": "Account email forwarding",
+	"selfHosted.providers": "Email, storage and AI providers may charge separately. Existing user permissions still control access to accounts and data.",
+	"selfHosted.notice": "Based on Mailflare, copyright 2026 Hieu Nguyen. Modified self-hosted distribution, provided without warranty under GNU AGPLv3. This is not a vendor Pro or Team license and does not include paid support.",
+	"selfHosted.source": "Source code",
+	"selfHosted.license": "License and copyright"
 }

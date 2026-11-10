@@ -68,7 +68,7 @@ New Amazon SES accounts start in a sandbox. Ask AWS for production access to lif
 2. **Finish setup privately.** Set the `SETUP_SECRET` Worker secret, open `/setup`, enter it and create your admin account.
 3. **Connect a domain.** Add a domain from the same Cloudflare account, then create your first mailbox.
 
-> **Use separate, scoped credentials.** Keep the deployment token in your deployment environment. Store a separate runtime `CF_TOKEN` as a Worker secret, restricted to the account and zones used by Mailflare. Grant Zone Read, DNS Edit and Email Routing Rules Edit only for those zones; add account Email Sending Edit only when using Cloudflare sending. See the deployment guide for feature-specific permissions. Avoid Global API Keys and all-account/all-zone access.
+> **Use separate, scoped credentials.** Keep the deployment token in your deployment environment. Store a separate runtime `CF_TOKEN` as a Worker secret, restricted to the account and zones used by Mailflare. Grant Zone Read, DNS Edit, Zone Settings Edit and Email Routing Rules Edit only for those zones; add account Email Sending Edit only when using Cloudflare sending. See the deployment guide for feature-specific permissions. Avoid Global API Keys and all-account/all-zone access.
 >
 > **Protect initial setup.** Generate a secret with `openssl rand -hex 32`, store it as the Worker secret `SETUP_SECRET`, and enter it at `/setup`. Keep the app private until setup is complete. You can remove the secret after the first administrator is created.
 
@@ -142,3 +142,7 @@ A schema change needs a migration for each database type. See [Databases](docs/d
 ## License
 
 See [LICENSE](LICENSE).
+
+## Self-hosted distribution
+
+This fork enables every implemented feature, including branding, unlimited accounts, shared mailboxes, booking hosts and forwarding, without vendor activation. Account permissions still apply. External provider charges and vendor support are separate. Modified from Mailflare by Hieu Nguyen under GNU AGPLv3; see [LICENSE](LICENSE). The running installation links to this fork's [source](https://github.com/mukeshkr123/mailflare) from `/licenses`.
