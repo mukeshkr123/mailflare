@@ -34,6 +34,7 @@ export { RealtimeHub } from "./src/lib/realtime/hub";
 
 export default {
 	async fetch(request: Request, rawEnv: CloudflareEnv, ctx: ExecutionContext) {
+		const startedAt = performance.now();
 		const env = withDatabase(withStorage(rawEnv));
 		const url = new URL(request.url);
 		if (url.pathname === "/api/realtime") {
@@ -55,7 +56,13 @@ export default {
 			return hub.fetch(hubRequest);
 		}
 
-		return vinextHandler.fetch(request, env, ctx);
+		const response = await vinextHandler.fetch(request, env, ctx);
+		// Expose only elapsed time, never queries, tokens or request bodies.
+		// Preserve streamed bodies and existing cookies without buffering.
+		if (!url.pathname.startsWith("/api/") || response.status === 101) return response;
+		const timed = new Response(response.body, response);
+		timed.headers.append("Server-Timing", `app;dur=${(performance.now() - startedAt).toFixed(1)}`);
+		return timed;
 	},
 
 	async email(message: ForwardableEmailMessage, rawEnv: CloudflareEnv, ctx: ExecutionContext) {
