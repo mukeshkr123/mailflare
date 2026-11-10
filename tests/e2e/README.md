@@ -20,7 +20,7 @@ disposable storage, then target it with `PLAYWRIGHT_BASE_URL`:
 MAILFLARE_TEST_STATE_PATH="$(mktemp -d)" npx vp dev --port 3002 --strictPort
 ```
 
-On a clean instance the suite calls `POST /api/setup/prepare` once before the
+Set a disposable `SETUP_SECRET` (32 random bytes encoded as hex) in the local server environment and the test process. Never use a production secret. On a clean instance the suite calls `POST /api/setup/prepare` once before the
 first test, so the schema exists before the demo account is reset. The route
 applies the bundled migrations and must answer 200, or 403 when an admin
 already exists. A 503 means the server's setup checks are not met, for example
@@ -35,3 +35,7 @@ runs against the same instance or test-output directory.
 
 The tests use Chromium's virtual authenticator; no physical security key is
 needed. They cover desktop and mobile web, not native mobile applications.
+
+## Production setup regression checks
+
+Run `npm run build:node`, then `npm run test:setup`. These checks start a separate production Node server with fresh SQLite/files and a random dummy setup secret per scenario. They cover desktop password setup, mobile passkey enrollment, rejected secrets, sign-in, and the retired updater. No Cloudflare credentials or live mail service are used. Screenshots and failure traces are written under `test-results/`. Install Chromium first if it is unavailable.

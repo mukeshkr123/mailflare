@@ -103,6 +103,7 @@ and the DNS page shows what to set by hand.
 | `SMTP_TLS_KEY`, `SMTP_TLS_CERT` | unset | STARTTLS certificate for the listener |
 | `SMTP_URL` | unset | Outbound relay |
 | `SMTP_TLS_REJECT_UNAUTHORIZED` | `true` | Trust self-signed relay certificates when `false` |
+| `SETUP_SECRET` | required for initial setup | 32–128 random bytes encoded as hex; generate with `openssl rand -hex 32` and enter on `/setup`; remove after setup |
 | `CF_ACCOUNT_ID`, `CF_TOKEN` | unset | Cloudflare Email Sending, and zone management if the token allows |
 | `B2_KEY_ID`, `B2_APPLICATION_KEY`, `B2_BUCKET`, `B2_ENDPOINT` | unset | Store blobs in Backblaze B2 (all four required) instead of files under `/data/blobs`; see [Deployment](deployment.md#object-storage-r2-or-backblaze-b2) |
 | `S3_BUCKET`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` | unset | Store blobs in AWS S3; the keys fall back to `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. Backblaze wins if both are set |
@@ -146,3 +147,5 @@ MAILFLARE_RUNTIME=node NODE_ENV=production DATA_DIR=./data node dist/server.mjs
 
 Port 25 needs root or a capability (`setcap cap_net_bind_service=+ep`); use
 `SMTP_INBOUND_PORT=2525` behind a port forward otherwise.
+
+First-run setup requires `SETUP_SECRET` in `.env.docker`. Keep the server private until you have entered that secret at `/setup` and created your administrator account. Setup requests fail closed when the secret is missing. Use HTTPS through your reverse proxy; never expose port 3000 directly to the Internet. Existing accounts do not require this secret to log in. Updates are manual; back up, review upstream changes, validate and rebuild before restarting.

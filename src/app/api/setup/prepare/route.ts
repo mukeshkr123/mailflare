@@ -1,14 +1,17 @@
+import { requireSetupSecret } from "@/lib/auth/setup-secret";
 import { NextResponse } from "next/server";
 import { hasAdminAccount } from "@/lib/auth/setup";
 import { getEnv } from "@/lib/cloudflare";
 import { getSetupRequirementChecks } from "@/lib/setup/configuration";
 import { migrateCleanDatabase } from "@/lib/setup/migration";
 
-export async function POST() {
+export async function POST(request: Request) {
 	const env = getEnv();
 	if (await hasAdminAccount(env)) {
 		return NextResponse.json({ error: "Initial setup is already complete" }, { status: 403 });
 	}
+	const denied = await requireSetupSecret(env, request);
+	if (denied) return denied;
 
 	const checks = getSetupRequirementChecks(env);
 	if (checks.some((check) => !check.configured)) {

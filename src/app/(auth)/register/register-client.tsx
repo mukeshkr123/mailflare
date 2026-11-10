@@ -24,6 +24,7 @@ import type { DomainPreflight, DomainSetupResult, SetupRequirementCheck } from "
 export function RegisterClient() {
   const { t } = useLanguage();
   const router = useRouter();
+  const [setupSecret, setSetupSecret] = useState("");
   const [hasAdminAccount, setHasAdminAccount] = useState<boolean | null>(null);
   const [hasPrimaryDomain, setHasPrimaryDomain] = useState<boolean | null>(
     null,
@@ -50,9 +51,6 @@ export function RegisterClient() {
   const [turnstileReset, setTurnstileReset] = useState(0);
   const [usePasskey, setUsePasskey] = useState(false);
 
-  useEffect(() => {
-    void runPreparation();
-  }, []);
 
   const accountDomain = setupDomain ?? primaryDomain;
 
@@ -73,7 +71,7 @@ export function RegisterClient() {
     setReplaceMxRecords(false);
     setError(null);
 
-    void checkExistingMx(accountDomain)
+    void checkExistingMx(accountDomain, setupSecret)
       .then(({ ok, data }) => {
         if (!active) return;
         setMxChecking(false);
@@ -92,7 +90,7 @@ export function RegisterClient() {
     return () => {
       active = false;
     };
-  }, [step, accountDomain, mxCheckRevision, setupSkipDns, t]);
+  }, [step, accountDomain, mxCheckRevision, setupSkipDns, setupSecret, t]);
 
   async function runPreparation() {
     setLoading(true);
@@ -100,7 +98,7 @@ export function RegisterClient() {
     setPreparationComplete(false);
 
     try {
-      const preparation = await prepareSetup();
+      const preparation = await prepareSetup(setupSecret);
       setChecks(preparation.data.checks ?? []);
       setDatabaseMigrated(!!preparation.data.migrated);
       if (!preparation.ok) {
@@ -139,7 +137,7 @@ export function RegisterClient() {
     const usedCachedCheck = domainCheck?.hostname === hostname;
     const result: { ok: boolean; data: DomainSetupResult } = usedCachedCheck
       ? { ok: true, data: { domain: domainCheck } }
-      : await submitPrimaryDomain(hostname);
+      : await submitPrimaryDomain(hostname, setupSecret);
     const { ok, data } = result;
     setLoading(false);
     if (!ok || !data.domain) {
@@ -159,7 +157,7 @@ export function RegisterClient() {
 
     setDomainChecking(true);
     setError(null);
-    const { ok, data } = await submitPrimaryDomain(hostname);
+    const { ok, data } = await submitPrimaryDomain(hostname, setupSecret);
     setDomainChecking(false);
     if (!ok || !data.domain) {
       setDomainCheck(null);
@@ -185,7 +183,7 @@ export function RegisterClient() {
       return;
     }
 
-    const { ok, data } = await submitRegistration(form, {
+    const { ok, data } = await submitRegistration(form, setupSecret, {
       firstRun: true,
       domain,
       enableSending: setupDomain
@@ -211,6 +209,7 @@ export function RegisterClient() {
       setTurnstileReset((value) => value + 1);
       return;
     }
+    setSetupSecret("");
     window.location.assign(data.redirect ?? "/login");
   }
 
@@ -265,10 +264,17 @@ export function RegisterClient() {
       }
     >
       {step === 1 ? (
-        <div className="space-y-5">
+        <form className="space-y-5" onSubmit={(event) => { event.preventDefault(); void runPreparation(); }}>
           <p className="text-sm leading-6 text-neutral-600">
             {t("setup.prepareIntro")}
           </p>
+          {!preparationComplete && <div className="space-y-2">
+            <Label htmlFor="setup-secret">{t("setup.secretLabel")}</Label>
+            <Input id="setup-secret" type="password" autoComplete="off" maxLength={256} required
+              value={setupSecret} onChange={(event) => setSetupSecret(event.target.value)}
+              aria-describedby="setup-secret-hint" disabled={loading} />
+            <p id="setup-secret-hint" className="text-xs leading-5 text-neutral-500">{t("setup.secretHint")}</p>
+          </div>}
           <div className="space-y-2">
             {loading && checks.length === 0 && (
               <div className="flex items-center gap-3 rounded-2xl bg-neutral-50 px-4 py-3 text-sm text-neutral-600">
@@ -311,16 +317,15 @@ export function RegisterClient() {
             </Button>
           ) : (
             <Button
-              type="button"
+              type="submit"
               variant="outline"
               className="h-11 w-full rounded-full px-6 active:scale-[0.98]"
-              disabled={loading}
-              onClick={() => void runPreparation()}
+              disabled={loading || !setupSecret}
             >
-              {loading ? t("setup.checkingShort") : t("setup.checkAgain")}
+              {loading ? t("setup.checkingShort") : t("setup.unlock")}
             </Button>
           )}
-        </div>
+        </form>
       ) : showDomainStep ? (
         <form method="post" onSubmit={onDomainSubmit} className="space-y-5">
           <div className="space-y-2">

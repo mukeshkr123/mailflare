@@ -2370,5 +2370,10 @@
 	"account.permissions.allowDrive": "Allow Drive",
 	"actions.unsubscribeDeleteAll": "Se désabonner et tout supprimer",
 	"actions.unsubscribeDeleteConfirm": "Déplacer {count} anciens e-mails de cet expéditeur dans la corbeille ?",
-	"actions.unsubscribeTrashDone": "Désabonné, {count} e-mails placés dans la corbeille"
+	"actions.unsubscribeTrashDone": "Désabonné, {count} e-mails placés dans la corbeille",
+	"setup.secretLabel": "Setup secret",
+	"setup.secretHint": "Enter the setup secret supplied by the person deploying this installation.",
+	"setup.unlock": "Unlock setup",
+	"update.manual": "Review upstream changes, apply them to your installation, and deploy manually. Back up your data before updating.",
+	"update.installedVersion": "Installed version: {version}"
 }

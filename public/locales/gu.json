@@ -2356,5 +2356,10 @@
 	"account.permissions.allowDrive": "Allow Drive",
 	"actions.unsubscribeDeleteAll": "સભ્યતા રદ કરો અને બધું કાઢી નાખો",
 	"actions.unsubscribeDeleteConfirm": "આ મોકલનારના {count} જૂના ઇમેઇલ ટ્રેશમાં ખસેડવા?",
-	"actions.unsubscribeTrashDone": "સભ્યતા રદ; {count} ઇમેઇલ ટ્રેશમાં ગયા"
+	"actions.unsubscribeTrashDone": "સભ્યતા રદ; {count} ઇમેઇલ ટ્રેશમાં ગયા",
+	"setup.secretLabel": "Setup secret",
+	"setup.secretHint": "Enter the setup secret supplied by the person deploying this installation.",
+	"setup.unlock": "Unlock setup",
+	"update.manual": "Review upstream changes, apply them to your installation, and deploy manually. Back up your data before updating.",
+	"update.installedVersion": "Installed version: {version}"
 }

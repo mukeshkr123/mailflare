@@ -2356,5 +2356,10 @@
 	"account.permissions.allowDrive": "Allow Drive",
 	"actions.unsubscribeDeleteAll": "সাবস্ক্রিপশন বাতিল ও সব মুছুন",
 	"actions.unsubscribeDeleteConfirm": "এই প্রেরকের {count}টি পুরনো ইমেইল ট্র্যাশে নেবেন?",
-	"actions.unsubscribeTrashDone": "সাবস্ক্রিপশন বাতিল; {count}টি ইমেইল ট্র্যাশে গেছে"
+	"actions.unsubscribeTrashDone": "সাবস্ক্রিপশন বাতিল; {count}টি ইমেইল ট্র্যাশে গেছে",
+	"setup.secretLabel": "Setup secret",
+	"setup.secretHint": "Enter the setup secret supplied by the person deploying this installation.",
+	"setup.unlock": "Unlock setup",
+	"update.manual": "Review upstream changes, apply them to your installation, and deploy manually. Back up your data before updating.",
+	"update.installedVersion": "Installed version: {version}"
 }

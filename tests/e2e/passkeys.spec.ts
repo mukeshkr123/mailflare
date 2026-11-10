@@ -13,8 +13,10 @@ let totpSecret = "";
  * already exists, which also means the database is initialized.
  */
 async function prepareDatabase(request: APIRequestContext) {
-	const response = await request.post("/api/setup/prepare");
-	if (response.status() === 403) return;
+	const response = await request.post("/api/setup/prepare", {
+		headers: { "X-Mailflare-Setup-Secret": process.env.SETUP_SECRET ?? "" },
+	});
+	if (response.status() === 403 && (await request.get("/api/setup/status").then((result) => result.json())).hasAdminAccount) return;
 	const body = await response.json().catch(() => null);
 	expect(response.ok(), `POST /api/setup/prepare returned ${response.status()}: ${JSON.stringify(body)}`).toBe(true);
 	expect(body?.checks?.every((check: { configured: boolean }) => check.configured)).toBe(true);

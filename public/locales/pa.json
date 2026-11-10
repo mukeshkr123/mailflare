@@ -2356,5 +2356,10 @@
 	"account.permissions.allowDrive": "Allow Drive",
 	"actions.unsubscribeDeleteAll": "ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਰੱਦ ਕਰੋ ਅਤੇ ਸਭ ਮਿਟਾਓ",
 	"actions.unsubscribeDeleteConfirm": "ਇਸ ਭੇਜਣ ਵਾਲੇ ਦੇ {count} ਪੁਰਾਣੇ ਈਮੇਲ ਟ੍ਰੈਸ਼ ਵਿੱਚ ਭੇਜੀਏ?",
-	"actions.unsubscribeTrashDone": "ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਰੱਦ; {count} ਈਮੇਲ ਟ੍ਰੈਸ਼ ਵਿੱਚ ਭੇਜੇ ਗਏ"
+	"actions.unsubscribeTrashDone": "ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਰੱਦ; {count} ਈਮੇਲ ਟ੍ਰੈਸ਼ ਵਿੱਚ ਭੇਜੇ ਗਏ",
+	"setup.secretLabel": "Setup secret",
+	"setup.secretHint": "Enter the setup secret supplied by the person deploying this installation.",
+	"setup.unlock": "Unlock setup",
+	"update.manual": "Review upstream changes, apply them to your installation, and deploy manually. Back up your data before updating.",
+	"update.installedVersion": "Installed version: {version}"
 }

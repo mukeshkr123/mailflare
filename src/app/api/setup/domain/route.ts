@@ -1,3 +1,4 @@
+import { requireSetupSecret } from "@/lib/auth/setup-secret";
 import { NextResponse } from "next/server";
 import { hasAdminAccount } from "@/lib/auth/setup";
 import { getEnv } from "@/lib/cloudflare";
@@ -12,6 +13,8 @@ export async function POST(request: Request) {
 	if (await hasAdminAccount(env)) {
 		return NextResponse.json({ error: "Initial setup is already complete" }, { status: 403 });
 	}
+	const denied = await requireSetupSecret(env, request);
+	if (denied) return denied;
 
 	const existing = await getPrimaryDomain(env);
 	if (existing) {

@@ -65,13 +65,12 @@ New Amazon SES accounts start in a sandbox. Ask AWS for production access to lif
 ## Deploy
 
 1. **Deploy the app.** Click **Deploy to Cloudflare**. Keep the app name `mailflare`, or it will break.
-2. **Finish setup.** Open the app at `/setup` and create your admin account.
+2. **Finish setup privately.** Set the `SETUP_SECRET` Worker secret, open `/setup`, enter it and create your admin account.
 3. **Connect a domain.** Add a domain from the same Cloudflare account, then create your first mailbox.
 
-> **`CF_TOKEN` is required.** Create a scoped [Cloudflare API token](https://github.com/hieunc229/mailflare/issues/24#issuecomment-5523686105) with these permissions:
+> **Use separate, scoped credentials.** Keep the deployment token in your deployment environment. Store a separate runtime `CF_TOKEN` as a Worker secret, restricted to the account and zones used by Mailflare. Grant Zone Read, DNS Edit and Email Routing Rules Edit only for those zones; add account Email Sending Edit only when using Cloudflare sending. See the deployment guide for feature-specific permissions. Avoid Global API Keys and all-account/all-zone access.
 >
-> - All accounts: Email Sending:Edit, DNS Settings:Edit, Email Routing Addresses:Edit
-> - All zones: DNS Settings:Edit, Email Routing Rules:Edit, Zone Settings:Edit, DNS:Edit
+> **Protect initial setup.** Generate a secret with `openssl rand -hex 32`, store it as the Worker secret `SETUP_SECRET`, and enter it at `/setup`. Keep the app private until setup is complete. You can remove the secret after the first administrator is created.
 
 More options: [deployment guide](docs/deployment.md).
 
@@ -89,7 +88,9 @@ Install Mailflare for me from https://github.com/hieunc229/mailflare on my Cloud
 3. Keep the Worker name exactly "mailflare". Create or reuse the D1 database
    "mailflare", the R2 bucket "mailflare-raw", and the queues "mailflare-inbound",
    "mailflare-outbound" and "mailflare-agent".
-4. Install dependencies, run `npm run deploy`, and set CF_TOKEN as a Worker secret.
+4. Install dependencies and run `npm run validate`. Generate a 32-byte hex setup
+   secret through a secure input flow. Run `npm run deploy`, and set CF_TOKEN and
+   SETUP_SECRET as Worker secrets. Never print or commit their values.
    Do not run remote database migrations yourself. The /setup page does that.
 5. Give me the app URL and anything I still need to do. I will open /setup, create
    the admin account and connect my domain.
@@ -103,6 +104,7 @@ Runs as one container on any server, with SQLite and local files.
 
 ```bash
 cp .env.docker.example .env.docker
+# Set SETUP_SECRET in .env.docker to a fresh `openssl rand -hex 32` value.
 docker compose up -d --build
 ```
 
@@ -112,7 +114,8 @@ See [self-hosting](docs/self-hosting.md).
 
 ```bash
 cp .dev.vars.example .dev.vars
-npm install
+npm ci
+# Set SETUP_SECRET in .dev.vars to a fresh `openssl rand -hex 32` value.
 npm run db:migrate:local
 npm run dev
 ```
@@ -121,7 +124,8 @@ Add your Cloudflare credentials to `.dev.vars`, then open [localhost:3000](http:
 
 - `npm run build`: build the Worker
 - `npm run deploy`: build and deploy
-- `npm run lint`: lint and type check
+- `npm run validate`: type check, lint, run tests and build the Worker
+- Updates are manual: review upstream changes before applying and deploying them.
 
 A schema change needs a migration for each database type. See [Databases](docs/databases.md#migrations).
 

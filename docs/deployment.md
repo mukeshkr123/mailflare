@@ -11,25 +11,25 @@ Set up Mailflare in three steps:
 3. **Connect your domain:** add a domain managed by the same Cloudflare account and choose which service receives its mail. Mailflare configures email routing and, when available and selected, email sending before helping you create the first mailbox. Resend and Amazon SES are alternatives to Cloudflare for receiving and sending; see [Sending and receiving providers](providers.md).
 
 
-## Step 1: Setup CF_TOKEN
-To configure your `CF_TOKEN` (which is a scoped Cloudflare API Token with specific permissions), follow the below steps.
+## Step 1: Scope credentials and protect setup
 
-1. In your Cloudflare account, navigate to `Manage Account` → `Account API Tokens` and create a new token.
-2. At the top of the Policy window, select `Specified Domains` for all domains that you plan to connect
-    1. Then configure these permissions
-        1. DNS & Zones > DNS > Select `Edit` Access
-            1. This allows the confirmed setup flow to replace conflicting MX records
-        2. DNS & Zones > Zone > Select `Read` Access
-        3. DNS & Zones → Zone Settings → Select `Edit` Access
-        4. Email & Messaging > Email Routing Rules > Select `Edit` Access
-3. If mailflare will send emails: Add another policy and select `Entire Account`, and configure these permissions:
-    1. Email & Messaging > Email Sending > Select `Edit` Access
-4. After your token is setup, go to `Compute` → `Email Service` → `Email Sending`
-    1. You will need to purchase a paid workers plan if you don't already have one
-    2. Select On-board domain and follow the prompts
-    3. After this is done, and after you have setup Mailflare, on the Admin > domains page, when you expand the domain you can then configure DKIM and DMARC records
+Use two separate API tokens. Never store the Wrangler deployment token in the app.
 
-Paste only the token secret into the `CF_TOKEN` field in step 2. Do not include the word `Bearer` and do not use the token ID. The token must belong to the same Cloudflare account as the domains you connect.
+| Token / feature | Permissions | Resource scope |
+| --- | --- | --- |
+| Deployment (`CLOUDFLARE_API_TOKEN`) | Workers Scripts Edit, D1 Edit, Workers R2 Storage Edit, Queues Edit, Account Settings Read | Only the deployment account |
+| Deployment custom route (optional) | Workers Routes Edit | Only the intended zone |
+| Runtime `CF_TOKEN`: zone discovery and DNS | Zone Read, DNS Edit | Only the zones you will connect |
+| Runtime: Cloudflare Email Routing | Email Routing Rules Edit | Only those zones |
+| Runtime: Cloudflare Email Sending (optional) | Email Sending Edit | Only the sending account |
+
+Permission names can differ between Cloudflare's role-based and API-token screens. Use the narrow equivalent described in Cloudflare's [API token permissions](https://developers.cloudflare.com/fundamentals/api/reference/permissions/). Add additional permissions only when an enabled feature's API requires them, limited to the same account and zones. Resend/SES do not require Cloudflare Email Sending permissions. Do not grant access to every account or every zone, or use a Global API Key for a new install. Existing installations using broad credentials must replace and revoke them in Cloudflare: changing this repository does not alter issued tokens.
+
+Store only the runtime token as the Worker secret `CF_TOKEN`. Do not include `Bearer` or use a token ID. The zones must belong to the selected account.
+
+Generate at least 32 random bytes encoded as hex (`openssl rand -hex 32`) using a private terminal, then store that value with `npx wrangler secret put SETUP_SECRET` through its interactive input. Do not paste it into chat, command arguments, URLs, tracked files or a `NEXT_PUBLIC_` variable. The app accepts 32–128 bytes encoded as hex. Enter the same value on `/setup`; it stays in memory and is sent only in the `X-Mailflare-Setup-Secret` header over HTTPS. It is required for registration, database preparation, domain preflight and MX checks, even when DNS is skipped or Turnstile is enabled. Keep setup private as an additional precaution.
+
+Missing or malformed server configuration returns 503; an incorrect request secret returns 403. After the first administrator exists, setup remains closed even if `SETUP_SECRET` is removed. Existing accounts need no setup secret to sign in. Remove it after password setup or successful passkey enrollment, enable MFA, and test backup restoration with dummy data before connecting your primary mail domain.
 
 ## Step 2: Deploy mailflare
 
@@ -39,7 +39,7 @@ Paste only the token secret into the `CF_TOKEN` field in step 2. Do not include 
 
 2. Choose the Cloudflare account that owns the domain you want to use.
 3. Set the app name to exactly `mailflare`. Do not rename it. 
-4. Add `CF_TOKEN` when Cloudflare asks for the app's runtime variables or secrets. This is different from the CF_TOKEN that Cloudflare uses to deploy the app.
+4. Add `SETUP_SECRET` as a Worker secret and `CF_TOKEN` when Cloudflare asks for the app's runtime variables or secrets. This is different from the CF_TOKEN that Cloudflare uses to deploy the app.
 5. Start the deployment and wait for Cloudflare to finish provisioning and deploying the Worker.
 
 
@@ -55,7 +55,7 @@ across deployments so existing browser subscriptions remain valid.
 
 1. Open the URL of the deployed `mailflare` Worker.
 2. Go to `/setup` if Mailflare does not take you there automatically.
-3. Let Mailflare check the required Cloudflare configuration and initialize the empty D1 database.
+3. Enter your setup secret, then let Mailflare check the required Cloudflare configuration and initialize the empty D1 database.
 4. Create the first admin account when prompted.
 
 Setup applies the committed migrations through the Worker's D1 binding before creating the first admin account.
@@ -96,7 +96,8 @@ exactly mailflare. In the selected account, create or reuse the D1 database
 mailflare, R2 bucket mailflare-raw, and Queues mailflare-inbound,
 mailflare-outbound, and mailflare-agent. Set the D1 database_id in the local
 Wrangler config without committing that account-specific ID. Install dependencies,
-run npm run deploy, and set the runtime CF_TOKEN as a Worker secret. Do not run
+run npm run validate, then npm run deploy. Generate a 32-byte hex setup secret
+without logging it, and set CF_TOKEN and SETUP_SECRET as Worker secrets. Do not run
 remote D1 migrations manually; the /setup flow initializes the database.
 
 Give me the deployed URL and any remaining Cloudflare account actions. I will
@@ -105,10 +106,11 @@ open /setup, create the first admin account, and connect my domain there.
 
 ## Manual deployment
 
-Install dependencies, configure the Cloudflare bindings in `wrangler.jsonc`, and run:
+Install dependencies, configure the setup secret and Cloudflare bindings in `wrangler.jsonc`, and run:
 
 ```bash
-npm install
+npm ci
+npm run validate
 npm run deploy:local
 ```
 
@@ -167,35 +169,16 @@ The assistant panel no longer exposes MCP key management. External MCP clients c
 
 ## Updating Mailflare
 
-The **Update Mailflare** button in the admin dashboard dispatches `.github/workflows/deploy-update.yml` in the installation repository. The workflow replaces the installation branch's complete tracked tree with the latest upstream source, commits that replacement, and pushes it. This avoids merge conflicts between independently created installation and upstream histories. Target-only committed files and code changes are intentionally removed; repository variables, secrets, and other GitHub or Cloudflare configuration remain unchanged. A connected Cloudflare Git integration then builds and deploys the change.
+Application updates require manual review. The dashboard reports the installed version and does not dispatch GitHub workflows. The legacy `POST /api/admin/update` returns 410 to authenticated primary administrators; unauthenticated and unauthorized callers remain rejected.
 
-### Auto update
+1. Back up the database and stored objects; verify restoration on disposable data.
+2. Fetch upstream changes and review the diff, especially credentials, migrations, workflows and local security fixes. Merge or cherry-pick reviewed changes into a review branch; never replace your installation's complete tracked tree.
+3. Run `npm ci` and `npm run validate`, then review and merge the change. Configure branch protection to require the Validate checks before merging. A connected Cloudflare Git integration may deploy on merge, so use a protected production branch.
+4. Wait for deployment to finish, verify sign-in and mail delivery using dummy messages, then apply pending migrations as described below.
 
-Create a fine-grained personal access token for the installation repository with these repository permissions:
+Delete any previously installed source-replacement update workflow in your installation repository. Revoke the old GitHub update tokens and remove `GITHUB_UPDATE_TOKEN`, `GITHUB_UPDATE_REPO`, `GITHUB_UPDATE_REF`, `MAILFLARE_UPDATE_TOKEN`, and `UPDATE_SOURCE_REPOSITORY` from Cloudflare/GitHub configuration. They are no longer used. Code changes cannot revoke existing tokens or stop a previously running workflow; cancel such runs in GitHub before deploying this change.
 
-| Permission | Access | Used for |
-| --- | --- | --- |
-| Actions | Read and write | Dispatching `deploy-update.yml` from the Mailflare admin dashboard |
-| Contents | Read and write | Committing and pushing the upstream source into the installation repository |
-| Workflows | Read and write | Replacing files inside `.github/workflows` during an update |
-
-Configure the token and repository details in both Cloudflare and GitHub:
-
-| Location | Name | Type | Value |
-| --- | --- | --- | --- |
-| Cloudflare Worker | `GITHUB_UPDATE_TOKEN` | Secret | The fine-grained personal access token |
-| Cloudflare Worker | `GITHUB_UPDATE_REPO` | Variable | The installation repository in `owner/repository` format |
-| Cloudflare Worker | `GITHUB_UPDATE_REF` | Optional variable | The installation branch to update; omit it to use the repository's default branch |
-| GitHub repository → Actions | `MAILFLARE_UPDATE_TOKEN` | Repository secret | The same fine-grained personal access token |
-| GitHub repository → Actions | `UPDATE_SOURCE_REPOSITORY` | Optional repository variable | The upstream repository; defaults to `hieunc229/mailflare` |
-
-The same token can be used for `GITHUB_UPDATE_TOKEN` and `MAILFLARE_UPDATE_TOKEN` when it has all three permissions above. Keep both values secret and limit the token's repository access to the installation repository.
-
-Make sure `.github/workflows/deploy-update.yml` exists on the installation branch. If it is missing, create the file and copy its contents from the [canonical Mailflare update workflow](https://github.com/hieunc229/mailflare/blob/main/.github/workflows/deploy-update.yml). If an older installation has a different updater, replace it with the latest canonical workflow once. A running workflow cannot create or replace itself until the current workflow has been installed manually.
-
-After the GitHub Action completes successfully, wait for the connected Cloudflare deployment to finish before refreshing Mailflare or applying pending database migrations. The workflow updates the repository first; the new application version is not live until Cloudflare completes its deployment.
-
-Deployment and database migration are separate. After Cloudflare deploys a repository push or an admin-triggered update, open or refresh **Admin settings**. The application update card shows any pending database migrations. Select **Update database** to apply them through the Worker's D1 binding. The same runner initializes a new database during setup.
+Deployment and database migration are separate. After Cloudflare deploys a repository push , open or refresh **Admin settings**. The application update card shows any pending database migrations. Select **Update database** to apply them through the Worker's D1 binding. The same runner initializes a new database during setup.
 
 If the Cloudflare dashboard has a custom deploy command containing `wrangler d1 migrations apply DB --remote`, remove that part and use `npm run deploy`.
 
@@ -208,3 +191,9 @@ When adding a schema change, create a new uniquely named SQL file in `drizzle/mi
 ## Branding license
 
 Activate a purchased Pro or Team key from **Admin → Licenses**. Mailflare sends the key to Paymug and stores only a one-way hash and the activation state. Apply all D1 migrations before activating a license.
+
+## Release validation
+
+`npm run validate` runs TypeScript checking, lint, repository tests and the Cloudflare build. The Validate GitHub workflow also checks the Node production build, isolated browser setup scenarios and the Docker image. Keep the production branch protected by these checks; adding a workflow does not configure branch protection automatically. Do not deploy while required checks are failing or unavailable. `npm audit --omit=dev` checks published advisories for the production dependency tree; a clean audit is not a complete security assessment.
+
+The dependency overrides in `package.json` select patched fflate, joi, source-map-js and undici releases while retaining the current Cloudflare adapter. Keep them until upstream packages resolve patched dependencies themselves. Changes to mailauth include a major version upgrade; verify direct SMTP authentication as well as delivery when using Docker.

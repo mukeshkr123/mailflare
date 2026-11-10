@@ -7,8 +7,8 @@ import type {
 	SetupStatus,
 } from "./types";
 
-export async function prepareSetup(): Promise<{ ok: boolean; data: SetupPreparationResult }> {
-	const res = await fetch("/api/setup/prepare", { method: "POST" });
+export async function prepareSetup(setupSecret: string): Promise<{ ok: boolean; data: SetupPreparationResult }> {
+	const res = await fetch("/api/setup/prepare", { method: "POST", headers: { "X-Mailflare-Setup-Secret": setupSecret } });
 	return {
 		ok: res.ok,
 		data: (await res.json()) as SetupPreparationResult,
@@ -22,10 +22,10 @@ export async function getSetupStatus(): Promise<SetupStatus> {
 	return data;
 }
 
-export async function submitPrimaryDomain(hostname: string): Promise<{ ok: boolean; data: DomainSetupResult }> {
+export async function submitPrimaryDomain(hostname: string, setupSecret: string): Promise<{ ok: boolean; data: DomainSetupResult }> {
 	const res = await fetch("/api/setup/domain", {
 		method: "POST",
-		headers: { "Content-Type": "application/json" },
+		headers: { "Content-Type": "application/json", "X-Mailflare-Setup-Secret": setupSecret },
 		body: JSON.stringify({ hostname }),
 	});
 
@@ -35,10 +35,10 @@ export async function submitPrimaryDomain(hostname: string): Promise<{ ok: boole
 	};
 }
 
-export async function checkExistingMx(hostname: string): Promise<{ ok: boolean; data: MxCheckResult }> {
+export async function checkExistingMx(hostname: string, setupSecret: string): Promise<{ ok: boolean; data: MxCheckResult }> {
 	const res = await fetch("/api/setup/domain/mx", {
 		method: "POST",
-		headers: { "Content-Type": "application/json" },
+		headers: { "Content-Type": "application/json", "X-Mailflare-Setup-Secret": setupSecret },
 		body: JSON.stringify({ hostname }),
 	});
 
@@ -50,11 +50,12 @@ export async function checkExistingMx(hostname: string): Promise<{ ok: boolean; 
 
 export async function submitRegistration(
 	form: FormData,
+	setupSecret: string,
 	payload: { firstRun: boolean; domain: string; enableSending?: boolean; replaceMxRecords?: boolean; skipDns?: boolean },
 ): Promise<{ ok: boolean; data: RegisterResult }> {
 	const res = await fetch("/api/auth/register", {
 		method: "POST",
-		headers: { "Content-Type": "application/json" },
+		headers: { "Content-Type": "application/json", "X-Mailflare-Setup-Secret": setupSecret },
 		body: JSON.stringify(
 			payload.firstRun
 				? {

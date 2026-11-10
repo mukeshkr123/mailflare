@@ -2353,5 +2353,10 @@
 	"account.permissions.allowDrive": "Allow Drive",
 	"actions.unsubscribeDeleteAll": "Berhenti melanggan & padam semua",
 	"actions.unsubscribeDeleteConfirm": "Alihkan {count} e-mel lama daripada penghantar ini ke Sampah?",
-	"actions.unsubscribeTrashDone": "Berhenti melanggan; {count} e-mel dialihkan ke Sampah"
+	"actions.unsubscribeTrashDone": "Berhenti melanggan; {count} e-mel dialihkan ke Sampah",
+	"setup.secretLabel": "Setup secret",
+	"setup.secretHint": "Enter the setup secret supplied by the person deploying this installation.",
+	"setup.unlock": "Unlock setup",
+	"update.manual": "Review upstream changes, apply them to your installation, and deploy manually. Back up your data before updating.",
+	"update.installedVersion": "Installed version: {version}"
 }

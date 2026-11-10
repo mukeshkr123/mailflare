@@ -2356,5 +2356,10 @@
 	"account.permissions.allowDrive": "Allow Drive",
 	"actions.unsubscribeDeleteAll": "لغو اشتراک و حذف همه",
 	"actions.unsubscribeDeleteConfirm": "آیا {count} ایمیل قدیمی این فرستنده به سطل زباله منتقل شود؟",
-	"actions.unsubscribeTrashDone": "اشتراک لغو شد؛ {count} ایمیل به سطل زباله منتقل شد"
+	"actions.unsubscribeTrashDone": "اشتراک لغو شد؛ {count} ایمیل به سطل زباله منتقل شد",
+	"setup.secretLabel": "Setup secret",
+	"setup.secretHint": "Enter the setup secret supplied by the person deploying this installation.",
+	"setup.unlock": "Unlock setup",
+	"update.manual": "Review upstream changes, apply them to your installation, and deploy manually. Back up your data before updating.",
+	"update.installedVersion": "Installed version: {version}"
 }

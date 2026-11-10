@@ -2370,5 +2370,10 @@
 	"account.permissions.allowDrive": "Allow Drive",
 	"actions.unsubscribeDeleteAll": "Annulla iscrizione ed elimina tutto",
 	"actions.unsubscribeDeleteConfirm": "Spostare {count} email precedenti di questo mittente nel Cestino?",
-	"actions.unsubscribeTrashDone": "Iscrizione annullata; {count} email spostate nel Cestino"
+	"actions.unsubscribeTrashDone": "Iscrizione annullata; {count} email spostate nel Cestino",
+	"setup.secretLabel": "Setup secret",
+	"setup.secretHint": "Enter the setup secret supplied by the person deploying this installation.",
+	"setup.unlock": "Unlock setup",
+	"update.manual": "Review upstream changes, apply them to your installation, and deploy manually. Back up your data before updating.",
+	"update.installedVersion": "Installed version: {version}"
 }

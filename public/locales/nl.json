@@ -2356,5 +2356,10 @@
 	"account.permissions.allowDrive": "Allow Drive",
 	"actions.unsubscribeDeleteAll": "Afmelden & alles verwijderen",
 	"actions.unsubscribeDeleteConfirm": "{count} eerdere e-mails van deze afzender naar de prullenbak verplaatsen?",
-	"actions.unsubscribeTrashDone": "Afgemeld en {count} e-mails naar de prullenbak verplaatst"
+	"actions.unsubscribeTrashDone": "Afgemeld en {count} e-mails naar de prullenbak verplaatst",
+	"setup.secretLabel": "Setup secret",
+	"setup.secretHint": "Enter the setup secret supplied by the person deploying this installation.",
+	"setup.unlock": "Unlock setup",
+	"update.manual": "Review upstream changes, apply them to your installation, and deploy manually. Back up your data before updating.",
+	"update.installedVersion": "Installed version: {version}"
 }

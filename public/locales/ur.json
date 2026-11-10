@@ -2356,5 +2356,10 @@
 	"account.permissions.allowDrive": "Allow Drive",
 	"actions.unsubscribeDeleteAll": "سبسکرپشن ختم کریں اور سب حذف کریں",
 	"actions.unsubscribeDeleteConfirm": "اس مرسل کے {count} پرانے ای میلز کو ٹریش میں منتقل کریں؟",
-	"actions.unsubscribeTrashDone": "سبسکرپشن ختم؛ {count} ای میلز ٹریش میں منتقل کر دی گئیں"
+	"actions.unsubscribeTrashDone": "سبسکرپشن ختم؛ {count} ای میلز ٹریش میں منتقل کر دی گئیں",
+	"setup.secretLabel": "Setup secret",
+	"setup.secretHint": "Enter the setup secret supplied by the person deploying this installation.",
+	"setup.unlock": "Unlock setup",
+	"update.manual": "Review upstream changes, apply them to your installation, and deploy manually. Back up your data before updating.",
+	"update.installedVersion": "Installed version: {version}"
 }

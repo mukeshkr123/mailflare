@@ -27,7 +27,7 @@ npm run cf-typegen             # regenerate cloudflare-env.d.ts from wrangler.js
 
 There is no test script in `package.json`; the checks under `tests/` are `node:test` files run with `node --test tests/*.test.mjs` (pass the glob — on Node 24 a bare `tests/` is read as a module path). They must not need Workers bindings, so anything that reaches D1 or R2 belongs in a script under `scripts/` run against `npm run dev` instead.
 
-`next.config.ts` sets `typescript.ignoreBuildErrors: true` and `tsconfig.json` sets `noImplicitAny: false`, so the build will not catch type errors. Run `npx tsc --noEmit` if you want real type checking.
+`npm run validate` requires TypeScript checking, lint, repository tests and a Worker build. TypeScript build errors are not suppressed. `tsconfig.json` retains `noImplicitAny: false` for existing code.
 
 `npm run deploy` builds with vinext and uploads with Wrangler. The Cloudflare Vite plugin generates `dist/server/wrangler.json` and redirects Wrangler to it, preserving the custom `worker.ts` entrypoint.
 
@@ -182,7 +182,7 @@ Pro/Team keys are validated against Paymug (`src/lib/licenses/`); only a one-way
 
 ### Self-update
 
-The admin overview dispatches `deploy-update.yml` (constant in `src/app/api/admin/update/utils.ts`) in the installation repo, which merges the upstream default branch and pushes it. It does not migrate, build, or deploy; the connected Cloudflare Git integration deploys the push. The admin update card separately reports and applies pending D1 migrations through the Worker binding.
+Application updates are manual. The admin overview reports the installed version. The old update POST endpoint returns 410 after authorization and never dispatches GitHub workflows. Review upstream changes and preserve local security fixes before deploying. Initial setup endpoints require the server-only `SETUP_SECRET` (32–128 random bytes encoded as hex) through `X-Mailflare-Setup-Secret`; existing administrators keep setup closed.
 
 ## Conventions
 

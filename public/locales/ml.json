@@ -2356,5 +2356,10 @@
 	"account.permissions.allowDrive": "Allow Drive",
 	"actions.unsubscribeDeleteAll": "സബ്‌സ്‌ക്രിപ്‌ഷൻ റദ്ദാക്കി എല്ലാം നീക്കുക",
 	"actions.unsubscribeDeleteConfirm": "ഈ അയച്ചയാളുടെ {count} പഴയ ഇമെയിലുകൾ ട്രാഷിലേക്ക് മാറ്റണോ?",
-	"actions.unsubscribeTrashDone": "സബ്‌സ്‌ക്രിപ്‌ഷൻ റദ്ദായി; {count} ഇമെയിലുകൾ ട്രാഷിലേക്ക് മാറ്റി"
+	"actions.unsubscribeTrashDone": "സബ്‌സ്‌ക്രിപ്‌ഷൻ റദ്ദായി; {count} ഇമെയിലുകൾ ട്രാഷിലേക്ക് മാറ്റി",
+	"setup.secretLabel": "Setup secret",
+	"setup.secretHint": "Enter the setup secret supplied by the person deploying this installation.",
+	"setup.unlock": "Unlock setup",
+	"update.manual": "Review upstream changes, apply them to your installation, and deploy manually. Back up your data before updating.",
+	"update.installedVersion": "Installed version: {version}"
 }

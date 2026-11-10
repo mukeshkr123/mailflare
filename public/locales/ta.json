@@ -2356,5 +2356,10 @@
 	"account.permissions.allowDrive": "Allow Drive",
 	"actions.unsubscribeDeleteAll": "சந்தாவை நிறுத்தி அனைத்தையும் நீக்கு",
 	"actions.unsubscribeDeleteConfirm": "இந்த அனுப்புநரின் {count} பழைய மின்னஞ்சல்களை குப்பைக்கு நகர்த்தவா?",
-	"actions.unsubscribeTrashDone": "சந்தா நிறுத்தப்பட்டது; {count} மின்னஞ்சல்கள் குப்பைக்கு நகர்ந்தன"
+	"actions.unsubscribeTrashDone": "சந்தா நிறுத்தப்பட்டது; {count} மின்னஞ்சல்கள் குப்பைக்கு நகர்ந்தன",
+	"setup.secretLabel": "Setup secret",
+	"setup.secretHint": "Enter the setup secret supplied by the person deploying this installation.",
+	"setup.unlock": "Unlock setup",
+	"update.manual": "Review upstream changes, apply them to your installation, and deploy manually. Back up your data before updating.",
+	"update.installedVersion": "Installed version: {version}"
 }

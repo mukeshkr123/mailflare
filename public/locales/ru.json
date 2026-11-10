@@ -2384,5 +2384,10 @@
 	"account.permissions.allowDrive": "Allow Drive",
 	"actions.unsubscribeDeleteAll": "Отписаться и удалить всё",
 	"actions.unsubscribeDeleteConfirm": "Переместить {count} писем от этого отправителя в корзину?",
-	"actions.unsubscribeTrashDone": "Отписано; {count} писем перемещено в корзину"
+	"actions.unsubscribeTrashDone": "Отписано; {count} писем перемещено в корзину",
+	"setup.secretLabel": "Setup secret",
+	"setup.secretHint": "Enter the setup secret supplied by the person deploying this installation.",
+	"setup.unlock": "Unlock setup",
+	"update.manual": "Review upstream changes, apply them to your installation, and deploy manually. Back up your data before updating.",
+	"update.installedVersion": "Installed version: {version}"
 }

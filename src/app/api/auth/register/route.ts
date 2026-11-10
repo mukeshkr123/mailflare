@@ -1,3 +1,4 @@
+import { requireSetupSecret } from "@/lib/auth/setup-secret";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { getEnv } from "@/lib/cloudflare";
@@ -22,10 +23,13 @@ import { ensureBookingUsername } from "@/lib/booking/username";
 
 export async function POST(request: Request) {
 	const env = getEnv();
-	const db = getDb(env);
 	if (await hasAdminAccount(env)) {
 		return NextResponse.json({ error: "Registration is closed after the first account is created" }, { status: 403 });
 	}
+	const denied = await requireSetupSecret(env, request);
+	if (denied) return denied;
+	const db = getDb(env);
+
 
 	let body: unknown;
 	try {
